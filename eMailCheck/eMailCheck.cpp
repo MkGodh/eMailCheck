@@ -1,52 +1,54 @@
-﻿#include <iostream>
-#include <string>
+﻿#include <algorithm>
+#include <iostream>
 #include <istream>
-#include <algorithm>
+#include <string>
 
 using namespace std;
 
-bool firstPart(bool& correct, string eMail, string result, int& atIndex)
-{
-    int length = eMail.length();                    // Проверка строки на длинну
-    bool foundAtsign = false;                       //Переменная для отслежки @
+bool firstPart(bool& correct, string eMail, int& atIndex) {
+    int length = eMail.length();
+
+
+    bool foundAtsign = false;
 
     if (length < 1 || length > 64) {
         correct = false;
     }
 
     for (int i = 0; i < eMail.length(); i++) {
-        if (eMail[0] == '.') {                    // если первый символ равен точке - то мы выходим из цикла.
+        if (eMail[0] ==
+            '.') {
             correct = false;
             break;
         }
 
-        if (eMail[i] == '@') {                  // если находим @ то прерываем цикл и переходим к след. функции.
+        if (eMail[i] ==
+            '@') {
             foundAtsign = true;
             correct = true;
             atIndex = i;
             break;
         }
-        if (eMail[i] == '.' && eMail[i + 1] == '.') {
-            correct = false;
-            break;
-        }
 
-        if (eMail[i] == '.' && eMail[i + 1] == '.') {              // Проверка на две точки подряд
+        if (eMail[i] == '.' &&
+            eMail[i + 1] == '.') {
             correct = false;
             break;
         }
         if (eMail[i] >= 'a' && eMail[i] <= 'z' ||
             eMail[i] >= 'A' && eMail[i] <= 'Z' ||
-            eMail[i] >= '0' && eMail[i] <= '9') {     // Два блока для проверки на корректность символов
+            eMail[i] >= '0' &&
+            eMail[i] <=
+            '9') {
             correct = true;
         }
-        if (eMail[i] == '"' || eMail[i] == '(' || eMail[i] == ')' || eMail[i] == ',' ||
-            eMail[i] == ':' || eMail[i] == ';' || eMail[i] == '<' || eMail[i] == '>' ||
-            eMail[i] == '[' || eMail[i] == ']' || eMail[i] == '\\') {
+        if (eMail[i] == '"' || eMail[i] == '(' || eMail[i] == ')' ||
+            eMail[i] == ',' || eMail[i] == ':' || eMail[i] == ';' ||
+            eMail[i] == '<' || eMail[i] == '>' || eMail[i] == '[' ||
+            eMail[i] == ']' || eMail[i] == '\\') {
             correct = false;
             break;
         }
-
     }
     if (!foundAtsign) {
         correct = false;
@@ -54,25 +56,31 @@ bool firstPart(bool& correct, string eMail, string result, int& atIndex)
     return correct;
 }
 
-
-
-
-bool secondPart(bool& correct, string eMail, int atIndex)
-{
+bool secondPart(bool& correct, string eMail, int atIndex) {
+    int count = 0;
     int length = eMail.length();
     if (length < 1 || length > 63) {
         correct = false;
         return correct;
     }
 
-    bool foundAtSign = false; // Переменная для отслеживания наличия символа @
+    bool foundAtSign = false;
 
     for (int i = atIndex + 1; i < eMail.length(); i++) {
-        if (eMail[i] >= 'a' && eMail[i] <= 'z' || eMail[i] == '-' || eMail[i] >= '0' && eMail[i] <= '9') {
+        if (eMail[i] >= 'a' && eMail[i] <= 'z' || eMail[i] == '-' ||
+            eMail[i] >= '0' && eMail[i] <= '9') {
             correct = true;
         }
+        else if (eMail[i] == '.') {
+            count++;
+            if (count > 2) {
+                correct = false;
+                break;
+            }
+        }
         else if (eMail[i] == '@') {
-            foundAtSign = true;             // Если найден второй символ @  Устанавливаем флаг, что символ @ найден
+            foundAtSign = true;
+
             correct = false;
             break;
         }
@@ -80,12 +88,12 @@ bool secondPart(bool& correct, string eMail, int atIndex)
             correct = false;
             break;
         }
-        if (eMail[eMail.length() - 1] == '.') {
-            correct = false;
-        }
     }
     if (foundAtSign) {
-        correct = false; // Если не было символа @, устанавливаем correct в false
+        correct = false;
+    }
+    if (eMail[eMail.length() - 1] == '.') {
+        correct = false;
     }
     return correct;
 }
@@ -94,14 +102,13 @@ int main() {
 
     string eMail;
     bool correct = true;
-    string result;
     int atIndex = 0;
 
-    cout << "Please enter e-mail adress: "; cin >> eMail;
+    cout << "Please enter e-mail adress: ";
+    cin >> eMail;
 
-    bool isFirstPartCorrect = firstPart(correct, eMail, result, atIndex);
+    bool isFirstPartCorrect = firstPart(correct, eMail, atIndex);
     bool isSecondPartCorrect = secondPart(correct, eMail, atIndex);
-
 
     if (isFirstPartCorrect && isSecondPartCorrect) {
         cout << "Yes!";
